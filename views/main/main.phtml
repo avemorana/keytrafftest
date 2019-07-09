@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Test</h1>
+    <h4>Task 1</h4>
+    <p>Номер заказа, имя товара, цена, количество, имя оператора за которым числится заказ ,
+        ГДЕ количество товара >2 И id оператора 10 ИЛИ 12</p>
+    <button class="btn-task" number="1">Execute task 1</button>
+    <h6>query:</h6>
+    <p id="query1"></p>
+    <h6>result:</h6>
+    <table class="table">
+        <thead>
+        <th>request_id</th>
+        <th>offer_name</th>
+        <th>request_price</th>
+        <th>request_count</th>
+        <th>operator_name</th>
+        </thead>
+        <tbody id="tbody1">
+        </tbody>
+    </table>
+    <hr>
+    <h4>Task 2</h4>
+    <p> Имя товара, количество товара, и сумма (price) по каждому товару (сгруппировать)</p>
+    <button class="btn-task" number="2">Execute task 2</button>
+    <h6>query:</h6>
+    <p id="query2"></p>
+    <h6>result:</h6>
+    <table class="table">
+        <thead>
+        <th>offer_name</th>
+        <th>amount</th>
+        <th>price</th>
+        </thead>
+        <tbody id="tbody2">
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $(".btn-task").click(function () {
+            let number = $(this).attr('number');
+            $.ajax({
+                url: "query/" + number,
+                type: "POST",
+            }).done(function (data) {
+                $("#query" + number).html(data);
+            });
+            $.ajax({
+                url: "result/" + number,
+                type: "POST",
+            }).done(function (data) {
+                dataToTable(number, data);
+            });
+        });
+
+
+        function dataToTable(number, data) {
+            let dataArray = JSON.parse(data);
+            switch (Number(number)) {
+                case 1:
+                    dataArray.forEach(function (element) {
+                        $("#tbody1").append(
+                            "<tr>" +
+                            "<td>" + element['id'] + "</td>" +
+                            "<td>" + element['name'] + "</td>" +
+                            "<td>" + element['price'] + "</td>" +
+                            "<td>" + element['count'] + "</td>" +
+                            "<td>" + element['op'] + "</td>" +
+                            "</tr>"
+                        );
+                    });
+                    break;
+                case 2:
+                    dataArray.forEach(function (element) {
+                        $("#tbody2").append(
+                            "<tr>" +
+                            "<td>" + element['name'] + "</td>" +
+                            "<td>" + element['amount'] + "</td>" +
+                            "<td>" + element['price'] + "</td>" +
+                            "</tr>"
+                        );
+                    });
+                    break;
+                default:
+                    return false;
+            }
+        }
+    });
+</script>
+</body>
+</html>
